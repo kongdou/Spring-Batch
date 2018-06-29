@@ -21,3 +21,11 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+spring-batch-helloworld/.classpath
+spring-batch-helloworld/.project
+*.prefs
+spring-batch-helloworld/.DS_Store
+spring-batch-helloworld/src/.DS_Store
+spring-batch-helloworld/src/main/.DS_Store
+spring-batch-helloworld/src/test/.DS_Store
+.DS_Store
