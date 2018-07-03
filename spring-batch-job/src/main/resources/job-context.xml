@@ -3,6 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans  
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
 	http://www.springframework.org/schema/tx  
@@ -10,7 +11,11 @@
 	http://www.springframework.org/schema/aop  
 	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd  
 	http://www.springframework.org/schema/context  
-	http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://www.springframework.org/schema/batch
+    http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+ 	http://www.springframework.org/schema/task 
+    http://www.springframework.org/schema/task/spring-task-3.0.xsd"
 	default-autowire="byName">
 	<!-- 作业仓库，任何任务的操作都会记录在作业仓库中，作业仓库有两种，内存和数据库 -->
 	<bean id="jobRepository"
@@ -22,7 +27,14 @@
 		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
 		<property name="jobRepository" ref="jobRepository"></property>
 	</bean>
-
+	
+	<!-- 异步作业调度器 -->
+	<task:executor id="executor" pool-size="1"/>
+	<bean id="jobLauncherAsyn" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository"/>
+		<property name="taskExecutor" ref="executor"/>
+	</bean>
+	
 	<!-- 定义事务管理器 -->
 	<bean id="transactionManager"
 		class="org.springframework.batch.support.transaction.ResourcelessTransactionManager">
