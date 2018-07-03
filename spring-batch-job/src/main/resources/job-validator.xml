@@ -31,7 +31,7 @@
 		<validator ref="validator"></validator>
 	</job>
 	<bean:bean id="csvItemReader"
-		class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+		class="org.springframework.batch.item.file.FlatFileItemReader">
 		<bean:property name="resource"
 			value="classpath:credit-card-bill-201303.csv"></bean:property>
 		<bean:property name="lineMapper">
@@ -63,10 +63,10 @@
 
 	</bean:bean>
 
-	<bean:bean id="creditBillProcessor" scope="step"
+	<bean:bean id="creditBillProcessor"
 		class="fun.deepsky.springbatch.job.CreditBillProcessor" />
 
-	<bean:bean id="csvItemWriter" scope="step"
+	<bean:bean id="csvItemWriter"
 		class="org.springframework.batch.item.file.FlatFileItemWriter">
 		<bean:property name="resource" value="file:target/outPutFile.csv" />
 		<bean:property name="lineAggregator">

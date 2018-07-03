@@ -14,19 +14,33 @@
     http://www.springframework.org/schema/batch 
     http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
 	<bean:import resource="classpath:job-context.xml" />
+	 <!-- 抽象出父job -->
+	<job id="baseJob" abstract="true">
+		<listeners>
+			<listener ref="sysoutListener"></listener>
+		</listeners>
+	</job>
 	<!-- restartable 支持重新启动 -->
-	<job id="billJob" restartable="true">
+	<!-- 集成父job -->
+	<job id="billJob" restartable="false" parent="baseJob">
 		<step id="billStep">
 			<tasklet transaction-manager="transactionManager">
 				<chunk reader="csvItemReader" processor="creditBillProcessor"
 					writer="csvItemWriter" commit-interval="2"></chunk>
 			</tasklet>
 		</step>
+		<!-- 默认子类的拦截器会覆盖父类的拦截器，如果想合并父类的拦截器，增加merge属性 -->
+		<listeners merge="true">
+			<listener ref="sysoutAnnotationListener"></listener>
+		</listeners>
+		<!-- 参数校验 -->
+		<validator ref="validator"></validator>
 	</job>
 	<bean:bean id="csvItemReader"
-		class="org.springframework.batch.item.file.FlatFileItemReader">
+		class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
+		<!-- 使用late binding -->
 		<bean:property name="resource"
-			value="classpath:credit-card-bill-201303-restart.csv"></bean:property>
+			value="#{jobParameters['inputResource']}"></bean:property>
 		<bean:property name="lineMapper">
 			<bean:bean
 				class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
@@ -55,27 +69,54 @@
 
 
 	</bean:bean>
-	
-	<bean:bean id="creditBillProcessor" class="fun.deepsky.springbatch.job.CreditBillProcessor"/>
-	
-	<bean:bean id="csvItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter">
-		<bean:property name="resource" value="file:target/outPutFile.csv"/>
+
+	<bean:bean id="creditBillProcessor"
+		class="fun.deepsky.springbatch.job.CreditBillProcessor" scope="step"/>
+
+	<bean:bean id="csvItemWriter"
+		class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">
+		<bean:property name="resource" value="file:target/outPutFile.csv" />
 		<bean:property name="lineAggregator">
-			<bean:bean class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
-				<bean:property name="delimiter" value=","/>
+			<bean:bean
+				class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+				<bean:property name="delimiter" value="," />
 				<bean:property name="fieldExtractor">
-					<bean:bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
-						<bean:property name="names" value="accountID,name,amount,date,address">
+					<bean:bean
+						class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
+						<bean:property name="names"
+							value="accountID,name,amount,date,address">
 						</bean:property>
 					</bean:bean>
 				</bean:property>
 			</bean:bean>
 		</bean:property>
 	</bean:bean>
-	
+
 	<bean:bean id="creditBill" class="fun.deepsky.springbatch.job.CreditBill">
-	
+	</bean:bean>
+
+	<bean:bean id="sysoutListener"
+		class="fun.deepsky.springbatch.job.listener.SystemOutJobExecutionListener">
+
+	</bean:bean>
+
+	<bean:bean id="sysoutAnnotationListener"
+		class="fun.deepsky.springbatch.job.listener.SystemOutAnnotationListener">
+
 	</bean:bean>
 	
-	
+	<bean:bean id="validator" 
+		class="org.springframework.batch.core.job.DefaultJobParametersValidator">
+		<bean:property name="requiredKeys">
+			<bean:set>
+				<bean:value>date</bean:value>
+			</bean:set>
+		</bean:property>
+		<bean:property name="optionalKeys">
+			<bean:set>
+				<bean:value>name</bean:value>
+				<bean:value>inputResource</bean:value>
+			</bean:set>
+		</bean:property>
+	</bean:bean>
 </bean:beans>
