@@ -1,4 +1,4 @@
-package fun.deepsky.springbatch.helloworld;
+package fun.deepsky.springbatch.job;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Application {
 
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("job.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("job-restart.xml");
 		JobLauncher launcher =  (JobLauncher) context.getBean("jobLauncher");
 		Job job = (Job) context.getBean("billJob");
 		try {
@@ -20,5 +20,6 @@ public class Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
+	
 	}
 }
