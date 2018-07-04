@@ -8,7 +8,7 @@ public class CreditBillProcessor implements ItemProcessor<CreditBill, CreditBill
 	public CreditBill process(CreditBill bill) throws Exception {
 		System.out.println(bill.getName());
 		// TODO Auto-generated method stub
-		Thread.sleep(1000);
+		Thread.sleep(10000);
 		return bill;
 	}
 }

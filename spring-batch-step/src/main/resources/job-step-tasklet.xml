@@ -40,6 +40,53 @@
 			<listener ref="sysoutAnnotationListener"></listener>
 		</listeners>
 	</job>
+	<!-- 示例：重启，设置start-limit参数 -->
+	<job id="startLimitJob">
+		<step id="startLimitStep">
+			<tasklet start-limit="1">
+				<chunk reader="csvItemReader" processor="creditBillProcessor"
+					writer="csvItemWriter" commit-interval="5"></chunk>
+			</tasklet>
+		</step>
+	</job>
+
+	<!-- 多线程 -->
+	<job id="mulitThreadJob">
+		<step id="mulitThreadStep">
+			<tasklet start-limit="1" task-executor="taskExecutor"
+				throttle-limit="5">
+				<chunk reader="csvItemReader" processor="creditBillProcessor"
+					writer="csvItemWriter" commit-interval="5"></chunk>
+			</tasklet>
+		</step>
+	</job>
+	<bean:bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<bean:property name="corePoolSize" value="6" />
+		<bean:property name="maxPoolSize" value="6" />
+	</bean:bean>
+
+	<!-- 自定义 Tasklet -->
+	<job id="customTaskletJob">
+		<step id="customTaskletStep">
+			<tasklet ref="helloworldTasklet"></tasklet>
+		</step>
+	</job>
+
+	<!-- tasklet系统实现： 1、CallableTaskletAdapter 2、ChunkOrientedTasklet 3、MethodInvokingTaskletAdapter 
+		4、SystemCommandTasklet -->
+	<job id="taskletAdapterJob">
+		<step id="taskletAdapterStep">
+			<tasklet ref="adapter"></tasklet>
+		</step>
+	</job>
+
+	<bean:bean id="adapter"
+		class="org.springframework.batch.core.step.tasklet.MethodInvokingTaskletAdapter">
+		<bean:property name="targetObject" ref="testTaskletAdapter" />
+		<bean:property name="targetMethod" value="sysHello" />
+	</bean:bean>
+
 	<bean:bean id="csvItemReader"
 		class="org.springframework.batch.item.file.FlatFileItemReader">
 		<bean:property name="resource"
@@ -101,15 +148,17 @@
 	<bean:bean id="sysoutListener"
 		class="fun.deepsky.springbatch.job.listener.SystemOutJobExecutionListener">
 	</bean:bean>
-
 	<bean:bean id="sysoutAnnotationListener"
 		class="fun.deepsky.springbatch.job.listener.SystemOutAnnotationListener">
 	</bean:bean>
-
 	<bean:bean id="sysoutStepListener"
 		class="fun.deepsky.springbatch.step.listener.SystemOutStepExecutionListener">
-
 	</bean:bean>
 
+	<bean:bean id="helloworldTasklet"
+		class="fun.deepsky.springbatch.step.customtasklet.HelloWorldTasklet" />
+	<bean:bean id="testTaskletAdapter"
+		class="fun.deepsky.springbatch.step.taskletadapter.TestTaskletAdapter">
+	</bean:bean>
 
 </bean:beans>
