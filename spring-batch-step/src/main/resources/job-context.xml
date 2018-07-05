@@ -17,6 +17,21 @@
  	http://www.springframework.org/schema/task 
     http://www.springframework.org/schema/task/spring-task-3.0.xsd"
 	default-autowire="byName">
+	<context:property-placeholder location="classpath:mysql.properties"/>
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName">
+			<value>${datasource.driver}</value>
+		</property>
+		<property name="url">
+			<value>${datasource.url}</value>
+		</property>
+		<property name="username">
+			<value>${datasource.username}</value>
+		</property>
+		<property name="password">
+			<value>${}</value>
+		</property>
+	</bean>
 	<!-- 任务注册器 -->
 	<bean id="jobRegistry"
 		class="org.springframework.batch.core.configuration.support.MapJobRegistry"></bean>

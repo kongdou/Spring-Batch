@@ -7,6 +7,7 @@ import org.springframework.batch.item.ItemProcessor;
 public class RandomExceptionItemProcessor implements ItemProcessor<String, String>{
 
 	Random ra = new Random();
+	
 	@Override
 	public String process(String item) throws Exception {
 		int i = ra.nextInt(10);
