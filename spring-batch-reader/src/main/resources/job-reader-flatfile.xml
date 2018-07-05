@@ -88,13 +88,25 @@
 		<bean:property name="names" value="accountID,name,amount,date,address" />
 	</bean:bean>
 
+	<!-- 自定义FieldSetMapper
 	<bean:bean id="fieldSetMapper"
 		class="fun.deepsky.springbatch.reader.flat.CreditBillFieldSetMapper">
-
 	</bean:bean>
+ 	-->
+	<bean:bean id="fieldSetMapper"
+		class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+		<bean:property name="prototypeBeanName" value="creditBill">
+		</bean:property>
+	</bean:bean>	
+	
+	
+	<bean:bean id="creditBill" class="fun.deepsky.springbatch.reader.CreditBill"/>
+	
 	<bean:bean id="lineCallbackHandler"
 		class="fun.deepsky.springbatch.reader.flat.DefaultLineCallbackHandler"></bean:bean>
 		
 	<bean:bean id="simpleRecordSeparatorPolicy"
 		class="org.springframework.batch.item.file.separator.SimpleRecordSeparatorPolicy" />
+		
+		
 </bean:beans>
