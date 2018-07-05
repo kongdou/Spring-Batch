@@ -14,7 +14,7 @@
     http://www.springframework.org/schema/batch 
     http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
 	<bean:import resource="classpath:job-context.xml" />
-	<!-- Flat File Job -->
+	<!-- 定义job -->
 	<job id="flatFileJob">
 		<step id="flatFileStep">
 			<tasklet transaction-manager="transactionManager">
@@ -25,11 +25,15 @@
 		</step>
 	</job>
 
+	<!-- 定义reader，使用FlatFileItemReader -->
 	<bean:bean id="flatFileItemReader" scope="step"
 		class="org.springframework.batch.item.file.FlatFileItemReader">
+		<!-- 资源路径 -->
 		<bean:property name="resource"
 			value="classpath:/data/flat/credit-card-bill-201303-complex.csv" />
+		<!-- 将一行记录转成java对象 -->
 		<bean:property name="lineMapper" ref="lineMapper" />
+		<!-- 编码，默认是UTF-8 -->
 		<bean:property name="encoding" value="UTF-8" />
 		<!-- 资源不存在时，处理方式，true表示如果文件不存在，抛出异常 -->
 		<bean:property name="strict" value="true" />
@@ -44,12 +48,15 @@
 				<bean:value>$$</bean:value>
 			</bean:list>
 		</bean:property>
+		<!-- 定义文件如何区分记录 -->
 		<bean:property name="recordSeparatorPolicy" ref="simpleRecordSeparatorPolicy" />
 	</bean:bean>
 
+	<!-- 定义processor -->
 	<bean:bean id="creditBillProcessor"
 		class="fun.deepsky.springbatch.reader.flat.CreditBillProcessor" scope="step" />
 
+	<!-- 定义writer -->
 	<bean:bean id="csvItemWriter"
 		class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step">
 		<bean:property name="resource" value="file:target/outputFile.csv" />
@@ -87,6 +94,7 @@
 	</bean:bean>
 	<bean:bean id="lineCallbackHandler"
 		class="fun.deepsky.springbatch.reader.flat.DefaultLineCallbackHandler"></bean:bean>
+		
 	<bean:bean id="simpleRecordSeparatorPolicy"
 		class="org.springframework.batch.item.file.separator.SimpleRecordSeparatorPolicy" />
 </bean:beans>
