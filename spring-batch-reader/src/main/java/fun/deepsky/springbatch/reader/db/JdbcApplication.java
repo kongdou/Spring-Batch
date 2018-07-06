@@ -16,7 +16,7 @@ public class JdbcApplication {
 		Job job = (Job) applicationContext.getBean("dbReadJob");
 		
 		try {
-			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).toJobParameters());
+			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).addString("id", "6").toJobParameters());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -21,7 +21,7 @@
 	<job id="dbReadJob">
 		<step id="dbReadStep">
 			<tasklet transaction-manager="transactionManager">
-				<chunk reader="jdbcItemReader" processor="creditBillProcessor"
+				<chunk reader="jdbcParameterItemReader" processor="creditBillProcessor"
 					writer="creditItemWriter" commit-interval="2">
 				</chunk>
 			</tasklet>
@@ -42,8 +42,29 @@
 		</bean:property>
 	</bean:bean>
 
+	<!-- jdbcItemReader 参数绑定 -->
+	<bean:bean id="jdbcParameterItemReader" scope="step"
+		class="org.springframework.batch.item.database.JdbcCursorItemReader">
+		<bean:property name="dataSource" ref="dataSource" />
+		<bean:property name="sql"
+			value="select ID,ACCOUNTID,NAME,AMOUNT,DATE,ADDRESS from t_credit where id between 1 and ?" />
+		<!-- 自定义rowMapper -->
+		<bean:property name="rowMapper" ref="customCreditRowMapper" />
+		<bean:property name="preparedStatementSetter" ref="parameterSetter" />
+	</bean:bean>
+	<bean:bean id="customCreditRowMapper"
+		class="fun.deepsky.springbatch.reader.db.CustomCreditRowMapper" />
+	<bean:bean id="parameterSetter"
+		class="org.springframework.batch.core.resource.ListPreparedStatementSetter" scope="step">
+		<bean:property name="parameters">
+			<bean:list>
+				<bean:value>#{jobParameters['id']}</bean:value>
+			</bean:list>
+		</bean:property>
+	</bean:bean>
 	<bean:bean id="creditBillProcessor"
 		class="fun.deepsky.springbatch.reader.db.CreditBillProcessor" />
 	<bean:bean id="creditItemWriter"
 		class="fun.deepsky.springbatch.reader.db.CreditItemWriter" />
+
 </bean:beans>
