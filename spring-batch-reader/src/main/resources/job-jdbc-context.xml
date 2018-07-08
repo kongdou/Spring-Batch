@@ -36,7 +36,7 @@
 		<bean:property name="dataSource" ref="dataSource"></bean:property>
 	</bean:bean>
 
-	<!-- 作业仓库，任何任务的操作都会记录在作业仓库中，作业仓库有两种，内存和数据库 -->
+	<!-- 作业仓库，任何任务的操作都会记录在作业仓库中，作业仓库有两种，内存和数据库 		-->
 	<job-repository id="jobRepository" data-source="dataSource"
 		transaction-manager="transactionManager" isolation-level-for-create="SERIALIZABLE"
 		table-prefix="BATCH_" max-varchar-length="1000"/>
