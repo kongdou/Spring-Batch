@@ -8,14 +8,14 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class HibernateApplication {
+public class HibernatePageApplication {
 
 	public static void main(String[] args) {
 
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("job-reader-hibernate-paging.xml");
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("job-reader-hibernate.xml");
 		
 		JobLauncher launcher = (JobLauncher) applicationContext.getBean("jobLauncher");
-		Job job = (Job) applicationContext.getBean("hibernatePageReadJob");
+		Job job = (Job) applicationContext.getBean("hibernateReadJob");
 		
 		try {
 			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).addString("begin","1").addString("end","5").toJobParameters());

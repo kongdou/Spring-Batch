@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bean:beans xmlns="http://www.springframework.org/schema/batch"
+	xmlns:bean="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd  
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd  
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    http://www.springframework.org/schema/batch 
+    http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+    http://www.springframework.org/schema/util 
+    http://www.springframework.org/schema/util/spring-util.xsd">
+	<bean:import resource="classpath:job-jdbc-context.xml" />
+	<!-- 定义job -->
+	<job id="jpaPageReadJob">
+		<step id="jpaPageReadStep">
+			<tasklet transaction-manager="transactionManager">
+				<chunk reader="jpaPageItemReader" processor="creditBillProcessor"
+					writer="creditItemWriter" commit-interval="2">
+				</chunk>
+			</tasklet>
+		</step>
+	</job>
+	<bean:bean id="jpaPageItemReader"
+		class="org.springframework.batch.item.database.JpaPagingItemReader"
+		scope="step">
+		<bean:property name="entityManagerFactory" ref="entityManagerFactory" />
+		<bean:property name="queryString"
+			value="select c from CreditBill c where c.id between :begin and :end" />
+		
+		<bean:property name="parameterValues">
+			<bean:map>
+				<bean:entry key="begin" value="#{jobParameters['id_begin']}" />
+				<bean:entry key="end" value="#{jobParameters['id_end']}" />
+			</bean:map>
+		</bean:property>
+		<bean:property name="pageSize" value="2" />
+	</bean:bean>
+
+	<bean:bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<bean:property name="dataSource" ref="dataSource" />
+		<bean:property name="persistenceUnitName" value="creditBill" />
+		<bean:property name="persistenceXmlLocation" value="classpath:persistence.xml" />
+		<bean:property name="jpaVendorAdapter">
+			<bean:bean
+				class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<bean:property name="showSql" value="true" />
+			</bean:bean>
+		</bean:property>
+		<bean:property name="jpaDialect">
+			<bean:bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+		</bean:property>
+	</bean:bean>
+
+	<bean:bean id="creditBillProcessor" scope="step"
+		class="fun.deepsky.springbatch.reader.hibernate.CreditBillProcessor" />
+	<bean:bean id="creditItemWriter" scope="step"
+		class="fun.deepsky.springbatch.reader.db.CreditItemWriter" />
+
+</bean:beans>
