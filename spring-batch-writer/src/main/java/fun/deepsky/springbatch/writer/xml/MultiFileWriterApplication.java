@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class MultiFileWriterApplication {
+	
 	public static void main(String[] args) {
 		ApplicationContext context = new ClassPathXmlApplicationContext("job-writer-multifile.xml");
 		JobLauncher launcher = (JobLauncher) context.getBean("jobLauncher");
@@ -21,4 +22,5 @@ public class MultiFileWriterApplication {
 			e.printStackTrace();
 		}
 	}
+	
 }

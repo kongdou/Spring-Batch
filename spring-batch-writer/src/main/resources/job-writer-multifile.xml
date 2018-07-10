@@ -22,7 +22,7 @@
 	<job id="mulitFileWriterJob">
 		<step id="mulitFileWriterStep">
 			<tasklet>
-				<chunk reader="xmlReader" writer="multiItemWriter" commit-interval="2">
+				<chunk reader="xmlReader" writer="extMultiItemWriter" commit-interval="2">
 				</chunk>
 			</tasklet>
 		</step>
@@ -49,6 +49,13 @@
 	
 	<!-- xml写 -->
 	<bean:bean id="multiItemWriter" class="org.springframework.batch.item.file.MultiResourceItemWriter" scope="step">
+		<bean:property name="resource" value="file:target/filesets/credit-car-bill.xml"/>
+		<bean:property name="itemCountLimitPerResource" value="2"/>
+		<bean:property name="delegate" ref="xmlWriter"></bean:property>
+	</bean:bean>
+	
+		<!-- xml写 -->
+	<bean:bean id="extMultiItemWriter" class="fun.deepsky.springbatch.writer.xml.ExtMultiResourceItemWriter" scope="step">
 		<bean:property name="resource" value="file:target/filesets/credit-car-bill.xml"/>
 		<bean:property name="itemCountLimitPerResource" value="2"/>
 		<bean:property name="delegate" ref="xmlWriter"></bean:property>
