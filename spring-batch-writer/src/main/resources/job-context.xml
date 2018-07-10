@@ -17,29 +17,53 @@
     http://www.springframework.org/schema/task 
     http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-	<context:property-placeholder location="classpath:mysql.properties" />
-	<!-- datasource -->
-	<bean:bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<bean:property name="driverClassName" value="${datasource.driver}" />
-		<bean:property name="url" value="${datasource.url}" />
-		<bean:property name="username" value="${datasource.username}" />
-		<bean:property name="password" value="${datasource.password}" />
+    <context:property-placeholder location="classpath:mysql.properties" ignore-unresolvable="true"/>
+    
+    <bean:bean 
+	    class="org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor">
+		<bean:property name="jobRegistry" ref="jobRegistry" />
 	</bean:bean>
-
-	<!-- transactionManager -->
-	<bean:bean id="transactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	
+    <bean:bean id="jobRegistry" 
+        class="org.springframework.batch.core.configuration.support.MapJobRegistry" />
+    
+    <bean:bean id="jobExplorer"
+		class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean">
+		<bean:property name="dataSource" ref="dataSource" />	
+	</bean:bean>
+	
+    <bean:bean id="jobOperator" 
+        class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+    	<bean:property name="jobRepository" ref="jobRepository" />
+    	<bean:property name="jobLauncher" ref="jobLauncher" />    	
+    	<bean:property name="jobRegistry" ref="jobRegistry" />
+    	<bean:property name="jobExplorer" ref="jobExplorer" />
+    </bean:bean>
+	
+	<job-repository id="jobRepository" data-source="dataSource"
+	    transaction-manager="transactionManager" isolation-level-for-create="SERIALIZABLE"
+	    table-prefix="BATCH_" max-varchar-length="1000"
+	/>
+	
+	<bean:bean id="jobLauncher" 
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<bean:property name="jobRepository" ref="jobRepository"/>
+	</bean:bean>
+	
+	<bean:bean id="transactionManager" 
+			class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<bean:property name="dataSource" ref="dataSource" />
 	</bean:bean>
-
-	<job-repository id="jobRepository" data-source="dataSource"
-		transaction-manager="transactionManager" isolation-level-for-create="SERIALIZABLE"
-		table-prefix="BATCH_" max-varchar-length="1000" />
-		
-	<bean:bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
-		<bean:property name="jobRepository" ref="jobRepository"/>
-	</bean:bean>	
-		
-		
+	
+    <bean:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+  		<bean:property name="driverClassName">
+   			<bean:value>${datasource.driver}</bean:value>
+  		</bean:property>
+  		<bean:property name="url">
+   			<bean:value>${datasource.url}</bean:value>
+  		</bean:property>
+  		<bean:property name="username" value="${datasource.username}"></bean:property>
+  		<bean:property name="password" value="${datasource.password}"></bean:property>
+ 	</bean:bean>
 </bean:beans>
+		

@@ -21,20 +21,20 @@
 	<job id="jdbcWriterJob">
 		<step id="jdbcWriterStep">
 			<tasklet transaction-manager="transactionManager">
-				<chunk reader="jdbcItemReader" writer="jdbcBatchWriter"
-					processor="processor" commit-interval="10">
+				<chunk reader="jdbcItemReader" writer="jdbcBatchSetterWriter"
+					processor="processor" commit-interval="3">
 				</chunk>
 			</tasklet>
 		</step>
 	</job>
-	
+
 	<!-- jdbcitemreader -->
 	<bean:bean id="jdbcItemReader"
 		class="org.springframework.batch.item.database.JdbcCursorItemReader"
 		scope="step">
 		<bean:property name="dataSource" ref="dataSource" />
 		<bean:property name="sql"
-			value="select ID,ACCOUNTID,NAME,AMOUNT,DATE,ADDRESS from t_credit where id between 1 and 5"/>
+			value="select ID,ACCOUNTID,NAME,AMOUNT,DATE,ADDRESS from t_credit where id between 1 and 5" />
 		<bean:property name="rowMapper">
 			<bean:bean class="org.springframework.jdbc.core.BeanPropertyRowMapper">
 				<bean:property name="mappedClass"
@@ -42,7 +42,7 @@
 			</bean:bean>
 		</bean:property>
 	</bean:bean>
-	
+
 	<!-- jdbc写 -->
 	<bean:bean id="jdbcBatchWriter"
 		class="org.springframework.batch.item.database.JdbcBatchItemWriter">
@@ -55,7 +55,19 @@
 		</bean:property>
 	</bean:bean>
 
+	<!-- jdbc写 -->
+	<bean:bean id="jdbcBatchSetterWriter"
+		class="org.springframework.batch.item.database.JdbcBatchItemWriter">
+		<bean:property name="dataSource" ref="dataSource" />
+		<bean:property name="sql"
+			value="insert into t_destcredit(ID,ACCOUNTID,NAME,AMOUNT,DATE,ADDRESS) values(?,?,?,?,?,?)" />
+		<bean:property name="itemPreparedStatementSetter">
+			<bean:bean
+				class="fun.deepsky.springbatch.writer.db.DestCreditBillItemPreparedStatementSetter" />
+		</bean:property>
+	</bean:bean>
+
 	<bean:bean id="processor" scope="step"
 		class="fun.deepsky.springbatch.writer.db.CreditBillProcessor" />
-		
+
 </bean:beans>

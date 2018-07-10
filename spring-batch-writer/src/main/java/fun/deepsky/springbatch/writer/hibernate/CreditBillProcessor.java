@@ -1,11 +1,11 @@
 /**
  * 
  */
-package fun.deepsky.springbatch.writer.db;
+package fun.deepsky.springbatch.writer.hibernate;
 
 import org.springframework.batch.item.ItemProcessor;
-
-public class CreditBillProcessor implements ItemProcessor<CreditBill, DestinationCreditBill> {
+public class CreditBillProcessor implements
+		ItemProcessor<CreditBill, DestinationCreditBill> {
 
 	public DestinationCreditBill process(CreditBill bill) throws Exception {
 		System.out.println(bill.toString());
