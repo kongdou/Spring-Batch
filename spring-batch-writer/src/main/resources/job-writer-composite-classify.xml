@@ -64,14 +64,14 @@
 	<bean:bean id="delimitedLineTokenizer"
 		class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
 		<bean:property name="delimiter" value="," />
-		<bean:property name="names" value="accountID,name,amount,date,address" />
+		<bean:property name="names" value="id,accountID,name,amount,date,address" />
 	</bean:bean>
 
 	<bean:bean id="creditBillFieldSetMapper"
-		class="fun.deepsky.springbatch.writer.flat.CreditBillFieldSetMapper" />
+		class="fun.deepsky.springbatch.writer.router.CreditBillFieldSetMapper" />
 
 	<bean:bean id="processor"
-		class="fun.deepsky.springbatch.writer.flat.CreditBillProcessor" scope="step" />
+		class="fun.deepsky.springbatch.writer.router.CreditBillProcessor" scope="step" />
 
 	<bean:bean id="flatFileItemWriterLarge"
 		class="org.springframework.batch.item.file.FlatFileItemWriter">
@@ -94,7 +94,7 @@
 			<bean:bean
 				class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
 				<bean:property name="names"
-					value="accountID,name,amount,date,address">
+					value="id,accountID,name,amount,date,address">
 				</bean:property>
 			</bean:bean>
 		</bean:property>

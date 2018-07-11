@@ -65,7 +65,6 @@ public class CreditBill implements Serializable{
 	public void setId(String id) {
 		this.id = id;
 	}
-
 	/**
 	 * 
 	 */
