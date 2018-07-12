@@ -51,7 +51,7 @@
 	<bean:bean id="flatItemReader"
 		class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
 		<bean:property name="resource"
-			value="classpath:data/flat/credit-card-bill-201303.csv" />
+			value="classpath:data/flat/credit-card-bill-201306.csv" />
 		<bean:property name="lineMapper" ref="lineMapper" />
 	</bean:bean>
 
