@@ -15,6 +15,7 @@ public class CleanTasklet implements Tasklet{
 	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+		System.out.println("清除路径:"+outputDirectory);
 		creditService.clean(outputDirectory);
 		return RepeatStatus.FINISHED;
 	}

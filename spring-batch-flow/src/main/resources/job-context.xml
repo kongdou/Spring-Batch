@@ -22,7 +22,7 @@
 
 	<bean:bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<bean:property name="dirverClassName" value="${datasource.driver}" />
+		<bean:property name="driverClassName" value="${datasource.driver}" />
 		<bean:property name="url" value="${datasource.url}" />
 		<bean:property name="username" value="${datasource.username}" />
 		<bean:property name="password" value="${datasource.password}" />
@@ -36,6 +36,11 @@
 	<job-repository id="jobRepository" data-source="dataSource"
 		transaction-manager="transactionManager" isolation-level-for-create="SERIALIZABLE"
 		table-prefix="BATCH_" max-varchar-length="1000"/>
+	
+		<bean:bean id="jobLauncher" 
+		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<bean:property name="jobRepository" ref="jobRepository"/>
+	</bean:bean>
 	
 	
 </bean:beans>

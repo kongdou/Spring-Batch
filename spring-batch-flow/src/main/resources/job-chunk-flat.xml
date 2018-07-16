@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bean:beans xmlns="http://www.springframework.org/schema/batch"
-	xmlns:bean="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<bean:beans xmlns="http://www.springframework.org/schema/batch"    
+    xmlns:bean="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xmlns:tx="http://www.springframework.org/schema/tx"    
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:context="http://www.springframework.org/schema/context"    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
     http://www.springframework.org/schema/tx 
     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd  
@@ -14,52 +17,63 @@
     http://www.springframework.org/schema/batch 
     http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
 
-	<step id="parentReadWriterStep" abstract="true">
-		<tasklet transaction-manager="transactionManager">
-			<chunk reader="flatFileReader" processor="creditBillProcessor"
-				writer="flatFileItemWriter" commit-interval="2">
-			</chunk>
-		</tasklet>
-	</step>
-
-	<bean:bean id="flatFileReader"
-		class="org.springframework.batch.item.file.FlatFileReader">
-		<bean:property name="resource" value="#{jobExecutionContext['readFile']}" />
-		<bean:property name="lineMapper" ref="lineMapper" />
+	<!-- 写CSV文件 -->
+    <step id="parentReadWriteStep" abstract="true">
+         <tasklet transaction-manager="transactionManager">
+            <chunk reader="flatFileItemReader" writer="flatFileItemWriter" 
+                processor="creditBillProcessor" commit-interval="2">
+            </chunk>
+         </tasklet>
+    </step>
+    
+    <bean:bean id="flatFileItemWriter" scope="step"
+        class="org.springframework.batch.item.file.FlatFileItemWriter">
+        <bean:property name="resource" value="#{jobExecutionContext['writeFile']}"/>
+        <bean:property name="lineAggregator" ref="lineAggregator"/>
+    </bean:bean>
+    
+    <bean:bean id="lineAggregator"
+                class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+         <bean:property name="delimiter" value=","></bean:property>
+         <bean:property name="fieldExtractor">
+             <bean:bean 
+                 class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
+                 <bean:property name="names" 
+                      value="accountID,name,amount,date,address">
+                 </bean:property>
+             </bean:bean>
+         </bean:property>
+     </bean:bean>
+     
+    <bean:bean id="flatFileItemReader" scope="step"
+        class="org.springframework.batch.item.file.FlatFileItemReader">
+        <bean:property name="resource" 
+            value="#{jobExecutionContext['readFile']}"/>
+        <bean:property name="lineMapper" ref="lineMapper" />
+    </bean:bean>
+    
+	<bean:bean id="lineMapper" 
+	    class="org.springframework.batch.item.file.mapping.DefaultLineMapper" >
+	    <bean:property name="lineTokenizer" ref="delimitedLineTokenizer" />
+	    <bean:property name="fieldSetMapper" ref="creditBillFieldSetMapper"/>
 	</bean:bean>
+            
+    <bean:bean id="delimitedLineTokenizer" 
+        class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+        <bean:property name="delimiter" value=","/>
+        <bean:property name="names" value="accountID,name,amount,date,address" />
+    </bean:bean>
 
-	<bean:bean id="lineMapper"
-		class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
-		<bean:property name="lineTokenizer" ref="lineTokenizer" />
-		<bean:property name="fieldSetMapper" ref="creditBillFieldSetMapper" />
-	</bean:bean>
-
-	<bean:bean id="lineTokenizer"
-		class="org.springframework.batch.item.file.mapping.DefaultLineTokenizer">
-		<bean:property name="delimiter" value="," />
-		<bean:property name="names" value="accountID,name,amount,date,address" />
-	</bean:bean>
-
-	<bean:bean id="creditBillFieldSetMapper"
-		class="fun.deepsky.springbatch.flow.CreditBillFieldSetMapper" />
-
-	<bean:bean id="creditBillProcessor"
-		class="fun.deepsky.springbatch.flow.CreditBillProcessor" />
-
-	<bean:bean id="flatFileItemWriter"
-		class="org.springframework.batch.item.file.FlatFileWriter">
-		<bean:property name="resource"
-			value="#{jobExecutionContext['writerFile']}" />
-		<bean:property name="lineAggregator" ref="lineAggregator" />
-	</bean:bean>
-	
-	<bean:bean id="lineAggregator" class="org.springframework.batch.item.file.transform.DelimiterLineAggregator">
-		<bean:property name="delimieter" value=","/>
-		<bean:property name="fieldExtractor">
-			<bean:bean class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
-				<bean:property name="names" value="accountID,name,amount,date,address"/>
-			</bean:bean>
-		</bean:property>
-	</bean:bean>
-
+    <bean:bean id="creditBillFieldSetMapper"
+        class="fun.deepsky.springbatch.flow.CreditBillFieldSetMapper">
+    </bean:bean>
+    
+    <bean:bean id="creditBill" scope="prototype"
+        class="fun.deepsky.springbatch.flow.CreditBill">
+    </bean:bean>
+    
+    <bean:bean id="creditBillProcessor" scope="step"
+        class="fun.deepsky.springbatch.flow.CreditBillProcessor">
+    </bean:bean>
+        
 </bean:beans>

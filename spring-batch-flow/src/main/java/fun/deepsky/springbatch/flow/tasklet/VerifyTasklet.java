@@ -19,6 +19,7 @@ public class VerifyTasklet implements Tasklet{
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		String status = creditService.verify(outputDirectory, readFileName);
+		System.out.println("验证状态:"+status);
 		if(status != null) {
 			chunkContext.getStepContext().getStepExecution().getExecutionContext().put(Constant.VERITY_STATUS, status);
 		}

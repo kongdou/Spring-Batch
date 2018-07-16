@@ -16,6 +16,7 @@ public class DecompressTasklet implements Tasklet{
 	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+		System.out.println("将文件："+inputFile+" 解压到"+outputDirectory+"目录下");
 		creditService.decompress(inputFile, outputDirectory);
 		return RepeatStatus.FINISHED;
 	}

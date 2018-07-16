@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bean:beans xmlns="http://www.springframework.org/schema/batch"
-	xmlns:bean="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+<bean:beans xmlns="http://www.springframework.org/schema/batch"    
+    xmlns:bean="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xmlns:tx="http://www.springframework.org/schema/tx"    
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:context="http://www.springframework.org/schema/context"    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
     http://www.springframework.org/schema/tx 
     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd  
@@ -13,29 +16,43 @@
     http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/batch 
     http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
-
-	<!-- 解压任务 -->
-	<bean:bean id="decompressTasklet" scope="step"
-		class="fun.deepsky.springbatch.flow.tasklet.DecompressTasklet">
-		<bean:property name="creditService" ref="creditService" />
-		<bean:property name="inputFile" value="#{jobParameters['inputFile']}" />
-		<bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}" />
-	</bean:bean>
-	<!-- 验证任务 -->
-	<bean:bean id="verifyTasklet" scope="step"
-		class="fun.deepsky.springbatch.flow.CreditServiceImpl.VerifyTasklet" >
-		<bean:property name="creditService" ref="creditService"/>
-		<bean:property name="outputDirectory" value="#jobParameters['workDirectory']"/>
-		<bean:property name="readFileName" value="#{jobParameters['readFileName']}"/>
-	</bean:bean>
-	
-	<!-- 清理任务 -->
-	<bean:bean id="cleanTasklet" scope="step" class="fun.deepsky.springbatch.flow.tasklet.CleanTasklet">
-		<bean:property name="creditService" ref="creditService"/>
-		<bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}"/>
-	</bean:bean>
-	<bean:bean id="creditService"
-		class="fun.deepsky.springbatch.flow.CreditServiceImpl">
-	</bean:bean>
-
+    
+    <!-- 解压 -->
+    <step id="abstractDecompressStep" abstract="true">
+        <listeners>
+            <listener ref="shareDataStepExecutionListener"></listener>
+        </listeners>
+    </step>
+    
+    <!-- 将文件路径信息存入 ExecutionContext中，后续的step中直接使用-->
+    <bean:bean id="shareDataStepExecutionListener"
+        class="fun.deepsky.springbatch.flow.listener.ShareDataStepExecutionListener">
+    </bean:bean>
+    
+    <bean:bean id="creditService"
+        class="fun.deepsky.springbatch.flow.CreditServiceImpl">
+    </bean:bean>
+    
+    <!-- 解压zip，从inputFile压缩文件解压到workDirectory文件夹下 -->
+    <bean:bean id="decompressTasklet" scope="step"
+        class="fun.deepsky.springbatch.flow.tasklet.DecompressTasklet">
+        <bean:property name="creditService" ref="creditService" />
+        <bean:property name="inputFile" value="#{jobParameters['inputFile']}" />
+        <bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}" />
+    </bean:bean>
+    
+    <!-- 验证 -->
+    <bean:bean id="verifyTasklet" scope="step"
+        class="fun.deepsky.springbatch.flow.tasklet.VerifyTasklet">
+        <bean:property name="creditService" ref="creditService" />
+        <bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}" />
+        <bean:property name="readFileName" value="#{jobParameters['readFileName']}" />
+    </bean:bean>
+    
+    <bean:bean id="cleanTasklet" scope="step"
+        class="fun.deepsky.springbatch.flow.tasklet.CleanTasklet">
+        <bean:property name="creditService" ref="creditService" />
+        <bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}" />
+    </bean:bean>
+    
 </bean:beans>
