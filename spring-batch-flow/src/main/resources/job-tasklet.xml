@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bean:beans xmlns="http://www.springframework.org/schema/batch"
+	xmlns:bean="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd  
+    http://www.springframework.org/schema/aop 
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd  
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/batch 
+    http://www.springframework.org/schema/batch/spring-batch-2.2.xsd">
+
+	<!-- 解压任务 -->
+	<bean:bean id="decompressTasklet" scope="step"
+		class="fun.deepsky.springbatch.flow.tasklet.DecompressTasklet">
+		<bean:property name="creditService" ref="creditService" />
+		<bean:property name="inputFile" value="#{jobParameters['inputFile']}" />
+		<bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}" />
+	</bean:bean>
+	<!-- 验证任务 -->
+	<bean:bean id="verifyTasklet" scope="step"
+		class="fun.deepsky.springbatch.flow.CreditServiceImpl.VerifyTasklet" >
+		<bean:property name="creditService" ref="creditService"/>
+		<bean:property name="outputDirectory" value="#jobParameters['workDirectory']"/>
+		<bean:property name="readFileName" value="#{jobParameters['readFileName']}"/>
+	</bean:bean>
+	
+	<!-- 清理任务 -->
+	<bean:bean id="cleanTasklet" scope="step" class="fun.deepsky.springbatch.flow.tasklet.CleanTasklet">
+		<bean:property name="creditService" ref="creditService"/>
+		<bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}"/>
+	</bean:bean>
+	<bean:bean id="creditService"
+		class="fun.deepsky.springbatch.flow.CreditServiceImpl">
+	</bean:bean>
+
+</bean:beans>
