@@ -54,5 +54,8 @@
         <bean:property name="creditService" ref="creditService" />
         <bean:property name="outputDirectory" value="#{jobParameters['workDirectory']}" />
     </bean:bean>
+        <bean:bean id="verifyStepExecutionListener"
+        class="fun.deepsky.springbatch.flow.listener.VerifyStepExecutionListener">
+    </bean:bean>
     
 </bean:beans>

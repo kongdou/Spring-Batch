@@ -8,14 +8,15 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class SequentialApplication {
+public class ConditionalDeciderApplication {
 
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("job-sequential.xml");
+
+		ApplicationContext context = new ClassPathXmlApplicationContext("job-conditional-decider.xml");
 
 		JobLauncher launcher = (JobLauncher) context.getBean("jobLauncher");
 
-		Job job = (Job) context.getBean("sequentialJob");
+		Job job = (Job) context.getBean("conditionalDeciderJob");
 
 		try {
 			launcher.run(job, new JobParametersBuilder().addDate("date", new Date())
@@ -26,5 +27,7 @@ public class SequentialApplication {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	
 	}
+	
 }
