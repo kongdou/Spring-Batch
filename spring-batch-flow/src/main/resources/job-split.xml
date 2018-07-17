@@ -21,8 +21,8 @@
 	<job id="splitJob">
 		<!-- 并行处理10月、11月账单 -->
 		<split id="split" task-executor="taskExecutor" next="cleanStep">
+			<!-- 10月账单zip文件（解压、验证、读写） -->
 			<flow>
-				<!-- 10月账单zip文件（解压、验证、读写） -->
 				<!-- 解压 -->
 				<step id="decompressStep" parent="abstractDecompressStep" next="verifyStep">
 					<tasklet ref="decompressTasklet" />
@@ -42,6 +42,7 @@
 				</step>
 			</flow>
 		</split>
+		<!-- 清理 -->
 		<step id="cleanStep">
 			<tasklet ref="cleanTasklet" />
 		</step>
@@ -49,15 +50,17 @@
 
 	<bean:bean id="taskExecutor"
 		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<bean:property name="corePoolSize" value="5" />
-		<bean:property name="maxPoolSize" value="15" />
+		<bean:property name="corePoolSize" value="20" />
+		<bean:property name="maxPoolSize" value="50" />
 	</bean:bean>
 
-	<bean:bean id="splitStepExecutionListener"
+	<bean:bean id="splitStepExecutionListener" scope="step"
 		class="fun.deepsky.springbatch.flow.listener.SplitStepExecutionListener">
 		<bean:property name="readFile"
 			value="classpath:data/credit-card-bill-201311.csv" />
 		<bean:property name="writeFile"
 			value="file:target/split/outputFile_11.csv" />
 	</bean:bean>
+
+
 </bean:beans>
