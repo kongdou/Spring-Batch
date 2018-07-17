@@ -15,7 +15,7 @@ public class CountRetryListener implements RetryListener{
 	public <T> void onError(RetryContext arg0, RetryCallback<T> arg1, Throwable arg2) {
 		// TODO Auto-generated method stub
 		CountHelper.increment();
-		System.out.println("CountRetryListener.onError()");
+		System.out.println("监听到重试，次数加1:"+CountHelper.getCount());
 	}
 
 	@Override

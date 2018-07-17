@@ -27,7 +27,7 @@ public class DefaultRetryCallback implements RetryCallback<String> {
 		count++;
 		retryContext.setAttribute("count", count);
 		Thread.sleep(sleepTime);
-		System.out.println("调用回调一次，抛出异常");
+		System.out.println("抛出第"+count+"次异常，进行重试");
 		throw new RuntimeException("Mock make exception on business logic.");
 	}
 
