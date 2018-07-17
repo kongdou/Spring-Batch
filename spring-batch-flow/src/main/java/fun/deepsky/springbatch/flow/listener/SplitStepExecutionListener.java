@@ -13,6 +13,7 @@ public class SplitStepExecutionListener implements StepExecutionListener{
 	
 	@Override
 	public void beforeStep(StepExecution stepExecution) {
+		System.out.println("SplitStepExecutionListener:"+readFile+"-----"+writeFile);
 		stepExecution.getJobExecution().getExecutionContext().putString(Constant.READ_FILE, readFile);
 		stepExecution.getJobExecution().getExecutionContext().putString(Constant.WRITE_FILE, writeFile);
 	}

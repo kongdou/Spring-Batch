@@ -22,7 +22,7 @@ public class SplitApplication {
 					.addString("inputFile","classpath:/data/credit-card-bill-201310.zip")
 					.addString("readFileName","credit-card-bill-201310.csv")
 					.addString("workDirectory", "file:target/work/")
-					.addString("writeTarget", "file:target/sequential/outputFile.csv").toJobParameters());
+					.addString("writeTarget", "file:target/split/outputFile_10.csv").toJobParameters());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
