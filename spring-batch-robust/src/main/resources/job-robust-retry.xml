@@ -18,11 +18,14 @@
 	<job id="retryJob">
 		<step id="retryStep">
 			<tasklet>
+				<!-- 重试5次 -->
 				<chunk reader="reader" processor="alwaysExceptionProcessor" writer="writer"
 					commit-interval="1" retry-limit="5">
+					<!-- 重试监听 -->
 					<retry-listeners>
 						<listener ref="systemRetryListener"/>
 					</retry-listeners>
+					<!-- 发生RuntimeException异常时，进行重试；FileNotFoundException不进行重试 -->
 					<retryable-exception-classes>
 						<include class="java.lang.RuntimeException"/>
 						<exclude class="java.io.FileNotFoundException"/>
@@ -36,6 +39,7 @@
    <job id="retryPolicyJob">
         <step id="retryPolicyStep">
           <tasklet>
+          	<!-- 使用重试策略-->
 				<chunk reader="reader" processor="alwaysExceptionProcessor" writer="writer" 
 				    commit-interval="1" retry-policy="exceptionClassifierRetryPolicy">
          		</chunk>
@@ -43,6 +47,7 @@
         </step>
     </job>
     
+    <!-- 自定义重试策略，当MockARuntimeException异常重试3次，MockBRuntimeException异常重试5次，只要一个达到重试次数就失败  -->
     <bean:bean id="exceptionClassifierRetryPolicy" class="org.springframework.retry.policy.ExceptionClassifierRetryPolicy">
     	<bean:property name="policyMap">
     		<bean:map>
