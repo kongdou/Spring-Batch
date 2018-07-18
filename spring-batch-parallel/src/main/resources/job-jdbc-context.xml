@@ -46,5 +46,9 @@
 		class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
 		<bean:property name="jobRepository" ref="jobRepository"></bean:property>
 	</bean:bean>
+	
+	<bean:bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<bean:property name="dataSource" ref="dataSource"/>
+	</bean:bean>
 </bean:beans>
 	
