@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 public class CreditBillRowMapper implements RowMapper<CreditBill> {
 
 	public CreditBill mapRow(ResultSet rs, int rowNum) throws SQLException {
+		System.out.println("asdfasdf");
 		CreditBill bill = new CreditBill();
 		bill.setId(rs.getString("ID"));
 		bill.setAccountID(rs.getString("ACCOUNTID"));

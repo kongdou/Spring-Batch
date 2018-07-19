@@ -1,0 +1,143 @@
+<bean:beans xmlns="http://www.springframework.org/schema/batch"
+	xmlns:bean="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:jms="http://www.springframework.org/schema/jms" xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans.xsd  
+    http://www.springframework.org/schema/task
+    http://www.springframework.org/schema/task/spring-task.xsd
+    http://www.springframework.org/schema/batch 
+    http://www.springframework.org/schema/batch/spring-batch.xsd
+    http://www.springframework.org/schema/integration 
+    http://www.springframework.org/schema/integration/spring-integration-4.3.xsd
+    http://www.springframework.org/schema/integration/jms 
+    http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.3.xsd
+    http://www.springframework.org/schema/jms 
+    http://www.springframework.org/schema/jms/spring-jms.xsd
+    http://activemq.apache.org/schema/core 
+    http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+	<bean:import resource="classpath:job-jdbc-context.xml" />
+	<!-- 连接ActiveMQ服务器 -->
+	<amq:connectionFactory id="connectionFactory"
+		brokerURL="tcp://localhost:61616" />
+
+	<!-- 定义Master Job、partitioner、handler -->
+	<job id="partitionRemoteJob">
+		<step id="partitionRemoteStep">
+			<partition partitioner="partitioner" handler="partitionHandler" />
+		</step>
+	</job>
+
+	<bean:bean id="partitioner"
+		class="org.springframework.batch.core.partition.support.MultiResourcePartitioner">
+		<bean:property name="keyName" value="fileName" />
+		<bean:property name="resources" value="classpath:/data/flat/*.csv" />
+	</bean:bean>
+
+	<bean:bean id="partitionHandler"
+		class="org.springframework.batch.integration.partition.MessageChannelPartitionHandler">
+		<bean:property name="messagingOperations">
+			<bean:bean class="org.springframework.integration.core.MessagingTemplate">
+				<bean:property name="defaultChannel" ref="MasterRequestChannel" />
+				<bean:property name="receiveTimeout" value="30000" />
+			</bean:bean>
+		</bean:property>
+		<bean:property name="replyChannel" ref="AggregatedChannel" />
+		<bean:property name="stepName" value="remoteStep" />
+		<bean:property name="gridSize" value="3" />
+	</bean:bean>
+
+
+	<int:channel id="MasterRequestChannel">
+		<int:dispatcher task-executor="RequestPublishExecutor" />
+	</int:channel>
+
+	<task:executor id="RequestPublishExecutor" pool-size="5-10"
+		queue-capacity="0" />
+
+	<int:channel id="MasteReplyChannel" />
+
+	<int-jms:outbound-channel-adapter
+		connection-factory="connectionFactory" destination-name="RequestQueue"
+		channel="MasterRequestChannel" />
+
+	<int-jms:message-driven-channel-adapter
+		connection-factory="connectionFactory" destination-name="ReplyQueue"
+		channel="MasterReplyChannel" />
+
+
+	<int:channel id="AggregatedChannel">
+		<int:queue />
+	</int:channel>
+	<int:aggregator ref="partitionHandler" input-channel="MasterReplyChannel"
+		output-channel="AggregatedChannel" />
+
+	<!-- salve -->
+	<int:channel id="SlaveRequestChannel" />
+	<int:channel id="SlaveReplyChannel" />
+
+	<int-jms:message-driven-channel-adapter
+		connection-factory="connectionFactory" destination-name="RequestQueue"
+		channel="SlaveRequestChannel" />
+
+	<int-jms:outbound-channel-adapter
+		connection-factory="connectionFactory" destination-name="ReplyQueue"
+		channel="SlaveReplyChannel" />
+
+
+	<int:service-activator ref="stepExecutionRequestHandler"
+		input-channel="SlaveRequestChannel" output-channel="SlaveReplyChannel" />
+
+	<step id="remoteStep">
+		<tasklet>
+			<chunk reader="jdbcItemPageReader" writer="jdbcItemWriter"
+				commit-interval="10" />
+			<listeners>
+				<listener ref="partitionItemReadListener"></listener>
+			</listeners>
+		</tasklet>
+	</step>
+
+	<bean:bean id="stepExecutionRequestHandler"
+		class="org.springframework.batch.integration.partition.StepExecutionRequestHandler">
+		<bean:property name="jobExplorer" ref="jobExplorer" />
+		<bean:property name="stepLocator" ref="stepLocator" />
+	</bean:bean>
+
+	<!-- 从db分页读数据 -->
+	<bean:bean id="jdbcItemPageReader" scope="step"
+		class="org.springframework.batch.item.database.JdbcPagingItemReader">
+		<bean:property name="dataSource" ref="dataSource" />
+		<bean:property name="queryProvider" ref="refQueryProvider" />
+		<bean:property name="pageSize" value="2" />
+		<bean:property name="rowMapper" ref="custCreditRowMapper" />
+	</bean:bean>
+
+	<bean:bean id="refQueryProvider" scope="step"
+		class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+		<bean:property name="dataSource" ref="dataSource" />
+		<bean:property name="selectClause"
+			value="select ID,ACCOUNTID,NAME,AMOUNT,DATE,ADDRESS" />
+		<bean:property name="fromClause" value="from t_credit" />
+		<bean:property name="whereClause" value="where ID between 1 and 15" />
+		<bean:property name="sortKey" value="ID" />
+	</bean:bean>
+
+	<bean:bean id="custCreditRowMapper"
+		class="fun.deepsky.springbatch.parallel.remotestep.CreditBillRowMapper" />
+
+	<bean:bean id="jdbcItemWriter"
+		class="org.springframework.batch.item.database.JdbcBatchItemWriter">
+		<bean:property name="dataSource" ref="dataSource" />
+		<bean:property name="sql"
+			value="insert into t_destcredit (ID,ACCOUNTID,NAME,AMOUNT,DATE,ADDRESS) values (:id,:accountID,:name,:amount,:date,:address)" />
+		<bean:property name="itemSqlParameterSourceProvider">
+			<bean:bean
+				class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider" />
+		</bean:property>
+	</bean:bean>
+
+
+</bean:beans>
