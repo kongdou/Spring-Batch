@@ -47,10 +47,12 @@
 		<bean:property name="stepName" value="remoteStep" />
 		<bean:property name="gridSize" value="3" />
 	</bean:bean>
+	
 	<!-- Master jms -->
 	<int:channel id="MasterRequestChannel">
 		<int:dispatcher task-executor="RequestPublishExecutor" />
 	</int:channel>
+	
 	<task:executor id="RequestPublishExecutor" pool-size="5-10"
 		queue-capacity="0" />
 	<!-- <int-jms:outbound-channel-adapter connection-factory="connectionFactory" 

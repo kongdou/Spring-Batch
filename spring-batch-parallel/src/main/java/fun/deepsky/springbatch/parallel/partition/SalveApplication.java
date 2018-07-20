@@ -8,18 +8,18 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class MasterApplication {
+public class SalveApplication {
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("job-partition-remote-Master.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("job-partition-remote-Slave.xml");
 		JobLauncher launcher = (JobLauncher) context.getBean("jobLauncher");
 		
-		Job job = (Job) context.getBean("partitionRemoteJob");
-		
-		try {
-			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).toJobParameters());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		Job job = (Job) context.getBean("slaveJob");
+//		
+//		try {
+//			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).toJobParameters());
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 }
