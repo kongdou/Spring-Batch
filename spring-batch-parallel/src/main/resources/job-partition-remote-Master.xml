@@ -35,7 +35,7 @@
 	<bean:bean id="partitioner"
 		class="org.springframework.batch.core.partition.support.MultiResourcePartitioner">
 		<bean:property name="keyName" value="fileName" />
-		<bean:property name="resources" value="classpath:data/flat/*.csv" />
+		<bean:property name="resources" value="file:target/classes/data/flat/*.csv" />
 	</bean:bean>
 
 	<bean:bean id="partitionHandler"
