@@ -10,16 +10,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class SlaveApplication {
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("job-partition-remote-MasterSlave.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("job-partition-remote-Slave.xml");
 		JobLauncher launcher = (JobLauncher) context.getBean("jobLauncher");
 		
-		Job job = (Job) context.getBean("partitionRemoteJob");
-		
-		try {
-			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).toJobParameters());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		Job job = (Job) context.getBean("slaveJob");
+//		
+//		try {
+//			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).toJobParameters());
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 }

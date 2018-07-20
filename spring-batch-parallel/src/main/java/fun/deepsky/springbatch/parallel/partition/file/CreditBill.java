@@ -1,11 +1,16 @@
 /**
  * 
  */
-package fun.deepsky.springbatch.parallel.partition;
+package fun.deepsky.springbatch.parallel.partition.file;
 
 import java.io.Serializable;
 
-
+/**
+ * 信用卡对账单模型.<br>
+ * 
+ * @author bruce.liu(mailto:jxta.liu@gmail.com)
+ * 2014-1-11下午02:29:58
+ */
 public class CreditBill implements Serializable{
 	/**
 	 * 
