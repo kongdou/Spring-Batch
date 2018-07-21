@@ -1,16 +1,20 @@
 /**
  * 
  */
-package fun.deepsky.springbatch.parallel.partition;
+package fun.deepsky.springbatch.parallel.partition.step;
 
 import java.io.Serializable;
 
-
-public class CreditBill implements Serializable{
+/**
+ * 
+ * @author bruce.liu(mailto:jxta.liu@gmail.com)
+ * 2014-1-11下午02:37:55
+ */
+public class DestinationCreditBill implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4940717436114184875L;
+	private static final long serialVersionUID = 5253572139260172440L;
 	private String id;
 	private String accountID = "";	/** 银行卡账户ID */
 	private String name = "";		/** 持卡人姓名 */
@@ -18,9 +22,9 @@ public class CreditBill implements Serializable{
 	private String date;			/** 消费日期 ，格式YYYY-MM-DD HH:MM:SS*/
 	private String address;			/** 消费场所 **/
 	
-	public CreditBill(){}
+	public DestinationCreditBill(){}
 	
-	public CreditBill(String accountID, String name, double amount, String date, String address){
+	public DestinationCreditBill(String accountID, String name, double amount, String date, String address){
 		this.accountID = accountID;
 		this.name = name;
 		this.amount = amount;
@@ -28,14 +32,6 @@ public class CreditBill implements Serializable{
 		this.address = address;
 	}
 	
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getAccountID() {
 		return accountID;
 	}
@@ -67,12 +63,20 @@ public class CreditBill implements Serializable{
 		this.address = address;
 	}
 	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	/**
 	 * 
 	 */
 	public String toString(){
 		StringBuffer sb = new StringBuffer();
-		sb.append("id=" + getId() + ";accountID=" + getAccountID() + ";name=" + getName() + ";amount="
+		sb.append("accountID=" + getAccountID() + ";name=" + getName() + ";amount="
 				+ getAmount() + ";date=" + getDate() + ";address=" + getAddress());
 		return sb.toString();
 	}

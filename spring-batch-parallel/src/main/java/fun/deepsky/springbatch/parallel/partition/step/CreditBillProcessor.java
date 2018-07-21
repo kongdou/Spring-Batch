@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fun.deepsky.springbatch.parallel.partition;
+package fun.deepsky.springbatch.parallel.partition.step;
 
 import org.springframework.batch.item.ItemProcessor;
 

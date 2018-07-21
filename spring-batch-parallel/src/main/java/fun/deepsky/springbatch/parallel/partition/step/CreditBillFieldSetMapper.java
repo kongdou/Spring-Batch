@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fun.deepsky.springbatch.parallel.partition;
+package fun.deepsky.springbatch.parallel.partition.step;
 
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;

@@ -99,7 +99,7 @@
 	</bean:bean>
 
 	<bean:bean id="creditBillFieldSetMapper"
-		class="fun.deepsky.springbatch.parallel.partition.CreditBillFieldSetMapper">
+		class="fun.deepsky.springbatch.parallel.partition.step.CreditBillFieldSetMapper">
 	</bean:bean>
 
 	<bean:bean id="jdbcItemWriter"
@@ -114,7 +114,7 @@
 	</bean:bean>
 
 	<bean:bean id="creditBillProcessor" scope="step"
-		class="fun.deepsky.springbatch.parallel.partition.CreditBillProcessor">
+		class="fun.deepsky.springbatch.parallel.partition.step.CreditBillProcessor">
 	</bean:bean>
 
 	<bean:bean id="taskExecutor"
@@ -124,6 +124,6 @@
 	</bean:bean>
 
 	<bean:bean id="partitionItemReadListener"
-		class="fun.deepsky.springbatch.parallel.partition.PartitionStepExecutionListener">
+		class="fun.deepsky.springbatch.parallel.partition.step.PartitionStepExecutionListener">
 	</bean:bean>
 </bean:beans>

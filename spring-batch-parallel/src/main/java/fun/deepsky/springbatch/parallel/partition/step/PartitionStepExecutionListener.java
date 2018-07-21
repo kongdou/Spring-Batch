@@ -1,4 +1,4 @@
-package fun.deepsky.springbatch.parallel.partition;
+package fun.deepsky.springbatch.parallel.partition.step;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;

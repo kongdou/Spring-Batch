@@ -1,4 +1,4 @@
-package fun.deepsky.springbatch.parallel.partition;
+package fun.deepsky.springbatch.parallel.partition.step;
 
 import java.util.Date;
 
