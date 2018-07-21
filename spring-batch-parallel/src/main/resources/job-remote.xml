@@ -23,6 +23,7 @@
 
 	<bean:import resource="classpath:job-jdbc-context.xml" />
 	
+	<!-- 远程step，Master和Slave在同一个文件中 -->   
 	<job id="remoteChunkJob">
 		<step id="stepRemoteChunk">
 			<tasklet>
@@ -84,11 +85,12 @@
 		<bean:property name="sessionTransacted" value="true" />
 	</bean:bean>	
 			
+			<!-- 
 	<amq:broker useJmx="false" persistent="false" schedulerSupport="false">
     	<amq:transportConnectors>
 			<amq:transportConnector uri="tcp://localhost:61616"/>
 		</amq:transportConnectors>
-	</amq:broker>
+	</amq:broker> -->
 	<amq:connectionFactory id="connectionFactory" brokerURL="tcp://localhost:61616"/>
 	
 	<jms:listener-container connection-factory="connectionFactory" 
@@ -97,7 +99,7 @@
 		<jms:listener destination="requests" response-destination="replies" 
 		    ref="chunkHandler" method="handleChunk" />
 	</jms:listener-container>
-	
+				
 	<!-- 从db分页读数据 -->
 	<bean:bean id="jdbcItemPageReader" scope="step" 
 	    class="org.springframework.batch.item.database.JdbcPagingItemReader">
@@ -117,7 +119,7 @@
       </bean:bean>    
          
     <bean:bean id="custCreditRowMapper" 
-        class="fun.deepsky.springbatch.parallel.remotestep.CreditBillRowMapper"/>
+        class="fun.deepsky.springbatch.parallel.partition.db.CustCreditRowMapper"/>
     	
 	<bean:bean id="jdbcItemWriter" 
         class="org.springframework.batch.item.database.JdbcBatchItemWriter">
@@ -140,5 +142,5 @@
 	
 	<bean:bean id="headerExtractor" 
 	    class="org.springframework.batch.integration.chunk.JmsRedeliveredExtractor"/>    
-
+	    
 </bean:beans>

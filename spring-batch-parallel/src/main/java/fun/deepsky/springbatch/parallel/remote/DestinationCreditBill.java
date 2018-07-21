@@ -1,7 +1,7 @@
 /**
  * 
  */
-package fun.deepsky.springbatch.parallel.remotestep;
+package fun.deepsky.springbatch.parallel.remote;
 
 import java.io.Serializable;
 

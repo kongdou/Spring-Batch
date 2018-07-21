@@ -1,4 +1,4 @@
-package fun.deepsky.springbatch.parallel.remotestep;
+package fun.deepsky.springbatch.parallel.remote;
 
 import java.util.Date;
 
@@ -8,13 +8,13 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class RemoteStepApplication {
+public class RemoteSlaveApplication {
 	
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("job-chunk-remote.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("job-remote-slave.xml");
 		JobLauncher launcher = (JobLauncher) context.getBean("jobLauncher");
 		
-		Job job = (Job) context.getBean("remoteChunkJob");
+		/*Job job = (Job) context.getBean("remoteChunkJob");
 		
 		try {
 			launcher.run(job, new JobParametersBuilder().addDate("date",new Date()).toJobParameters());
@@ -22,6 +22,7 @@ public class RemoteStepApplication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 

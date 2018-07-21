@@ -1,4 +1,4 @@
-package fun.deepsky.springbatch.parallel.remotestep;
+package fun.deepsky.springbatch.parallel.remote;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
